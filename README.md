@@ -1,2 +1,1 @@
-TRANSFER YOUR FILE ON BROWSER 
-only for destkop not for mobile
+part2 with klode wkwkwk
