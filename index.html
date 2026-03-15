@@ -24,18 +24,18 @@ text-shadow:0 0 10px #00ffd0;
 .wrapper{
 max-width:1200px;
 margin:auto;
-padding:20px;
+padding:15px;
 }
 
-/* DESKTOP */
+/* DEFAULT = HP */
 
 .layout{
 display:flex;
+flex-direction:column;
 gap:20px;
 }
 
 .panel{
-flex:1;
 background:#111;
 padding:20px;
 border-radius:12px;
@@ -74,6 +74,7 @@ border-radius:8px;
 cursor:pointer;
 margin-bottom:10px;
 font-weight:bold;
+width:100%;
 }
 
 #preview{
@@ -94,25 +95,20 @@ a{
 color:#00ffd0;
 }
 
-/* HP */
+/* DESKTOP */
 
-@media (max-width:700px){
+@media (min-width:768px){
 
 .layout{
-flex-direction:column;
+flex-direction:row;
 }
 
 .panel{
-width:100%;
+flex:1;
 }
 
 button{
-width:100%;
-font-size:16px;
-}
-
-.wrapper{
-padding:10px;
+width:auto;
 }
 
 }
