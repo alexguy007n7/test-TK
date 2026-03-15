@@ -2,97 +2,170 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>SoliCAN - Soli Scan</title>
+<title>SoliCAN Soli SCAN</title>
 
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
+
 body{
 font-family:Arial;
-background:#0f0f0f;
+background:#050505;
 color:white;
-text-align:center;
+margin:0;
 padding:20px;
 }
 
 h1{
-color:#00ff88;
+text-align:center;
+color:#00ffcc;
+text-shadow:0 0 10px #00ffcc;
+}
+
+.container{
+display:flex;
+gap:20px;
+}
+
+.panel{
+background:#111;
+border:1px solid #00ffcc33;
+padding:20px;
+border-radius:12px;
+flex:1;
+box-shadow:0 0 15px #00ffcc22;
 }
 
 video{
-width:320px;
+width:100%;
 border-radius:10px;
-margin-top:10px;
 }
 
 #preview{
-max-width:320px;
+width:100%;
 margin-top:10px;
 border-radius:10px;
 }
 
-#hasil{
-margin-top:20px;
-background:#1e1e1e;
-padding:15px;
-border-radius:10px;
-word-break:break-all;
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+background:#00ffcc;
+color:black;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
 }
 
-button{
-padding:10px 15px;
-margin:10px;
-border:none;
-border-radius:6px;
-background:#00ff88;
-cursor:pointer;
+button:hover{
+background:#00ffaa;
+}
+
+#hasil{
+margin-top:15px;
+background:#000;
+padding:15px;
+border-radius:8px;
+word-break:break-all;
+border:1px solid #00ffcc33;
 }
 
 a{
 color:#00ffcc;
 }
+
+/* scan line effect */
+
+.scanline{
+position:absolute;
+height:3px;
+width:100%;
+background:#00ffcc;
+animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+0%{transform:translateY(0)}
+100%{transform:translateY(300px)}
+}
+
+/* HP layout */
+
+@media (max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+button{
+width:100%;
+font-size:16px;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
 <h1>SoliCAN</h1>
-<p>Scan QR / Barcode dari kamera atau upload gambar</p>
 
-<button onclick="startCamera()">Scan Kamera</button>
+<div class="container">
 
-<br>
+<div class="panel">
 
+<h3>Scan Kamera</h3>
+
+<button onclick="startCamera()">Aktifkan Kamera</button>
+
+<div style="position:relative">
 <video id="video"></video>
+<div class="scanline"></div>
+</div>
 
-<br><br>
+</div>
+
+<div class="panel">
+
+<h3>Upload Barcode</h3>
 
 <input type="file" id="fileInput" accept="image/*">
-
-<br>
 
 <img id="preview">
 
 <div id="hasil">Belum ada hasil</div>
+
+</div>
+
+</div>
+
+<audio id="beep">
+<source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">
+</audio>
 
 <script>
 
 const codeReader = new ZXing.BrowserMultiFormatReader();
 const video = document.getElementById("video");
 const hasil = document.getElementById("hasil");
+const beep = document.getElementById("beep");
 
 function tampilkan(text){
+
+beep.play();
 
 hasil.innerHTML =
 "Link ditemukan:<br><a href='"+text+"' target='_blank'>"+text+"</a>";
 
 }
 
-/* SCAN KAMERA */
+/* kamera */
 
 function startCamera(){
 
-codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+codeReader.decodeFromVideoDevice(null, video, (result, err)=>{
 
 if(result){
 tampilkan(result.text);
@@ -102,7 +175,7 @@ tampilkan(result.text);
 
 }
 
-/* SCAN FILE */
+/* upload */
 
 document.getElementById("fileInput").addEventListener("change", function(e){
 
@@ -124,7 +197,7 @@ tampilkan(result.text);
 })
 .catch(() => {
 
-hasil.innerText = "Barcode tidak terbaca";
+hasil.innerText="Barcode tidak terbaca";
 
 });
 
