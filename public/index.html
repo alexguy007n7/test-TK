@@ -14,15 +14,73 @@ h1{ text-align:center; color:#00ffd0; }
 .wrapper{ max-width:1200px; margin:auto; padding:15px; }
 .layout{ display:flex; flex-direction:column; gap:20px; }
 .panel{ background:#111; padding:20px; border-radius:12px; }
-video{ width:100%; border-radius:10px; }
-button{ padding:12px; background:#00ffd0; border:none; border-radius:8px; width:100%; margin-bottom:10px; }
+
+/* Video container — posisi relative supaya tombol bisa di-overlay */
+.video-wrap{
+  position:relative;
+  display:inline-block;
+  width:100%;
+}
+video{
+  width:100%;
+  border-radius:10px;
+  display:block;
+}
+
+/* Tombol stop — overlay pojok kanan atas video, tersembunyi by default */
+#btnStop{
+  display:none;
+  position:absolute;
+  top:10px; right:10px;
+  width:40px; height:40px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.65);
+  border:2px solid #ff4444;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  transition:background 0.18s, transform 0.15s;
+  z-index:10;
+}
+#btnStop:hover{
+  background:rgba(255,60,60,0.85);
+  transform:scale(1.1);
+}
+/* SVG ikon kamera-off di dalam tombol */
+#btnStop svg{
+  width:20px; height:20px;
+  fill:none;
+  stroke:#ff4444;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transition:stroke 0.18s;
+}
+#btnStop:hover svg{ stroke:#fff; }
+
+button#btnStart{
+  padding:12px;
+  background:#00ffd0;
+  border:none;
+  border-radius:8px;
+  width:100%;
+  margin-bottom:10px;
+  cursor:pointer;
+  font-size:14px;
+}
+
 #preview{ width:100%; margin-top:10px; border-radius:10px; }
-#hasil{ margin-top:15px; padding:15px; background:#000; border-radius:8px; word-break:break-all; }
+#hasil{
+  margin-top:15px; padding:15px;
+  background:#000; border-radius:8px; word-break:break-all;
+}
 a{ color:#00ffd0; }
+
 @media(min-width:900px){
   .layout{ flex-direction:row; }
   .panel{ flex:1; }
-  button{ width:auto; }
+  button#btnStart{ width:auto; }
 }
 </style>
 </head>
@@ -34,8 +92,24 @@ a{ color:#00ffd0; }
 
     <div class="panel">
       <h3>Scan Kamera</h3>
-      <button onclick="startCamera()">Aktifkan Kamera</button>
-      <video id="video"></video>
+      <button id="btnStart" onclick="startCamera()">Aktifkan Kamera</button>
+
+      <div class="video-wrap">
+        <video id="video"></video>
+
+        <!-- Tombol stop: ikon kamera-off, muncul saat kamera aktif -->
+        <button id="btnStop" onclick="stopCamera()" title="Matikan Kamera">
+          <!-- Feather icons: camera-off SVG -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <!-- Garis diagonal / (slash) -->
+            <line x1="1" y1="1" x2="23" y2="23"/>
+            <!-- Bodi kamera -->
+            <path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h3a2 2 0 0 1 2 2v9.34"/>
+            <!-- Lingkaran lensa (dipotong slash) -->
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="panel">
@@ -49,10 +123,6 @@ a{ color:#00ffd0; }
 </div>
 
 <script>
-// Tidak ada key/logic di sini sama sekali.
-// Step 1: minta token HMAC sementara (expire 30 detik) dari /api/token
-// Step 2: pakai token untuk fetch logic dari /api/s
-// Token invalid/expired → 403, logic tidak pernah dikirim
 (function () {
   fetch('/api/token')
     .then(function (r) { return r.ok ? r.json() : null; })
