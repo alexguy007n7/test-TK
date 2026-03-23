@@ -1,4 +1,3 @@
-// api/s.js
 import { createHmac, timingSafeEqual } from 'crypto';
 
 function makeToken(secret, w) {
