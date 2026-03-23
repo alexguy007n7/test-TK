@@ -49,7 +49,10 @@ a{ color:#00ffd0; }
 </div>
 
 <script>
-
+// Tidak ada key/logic di sini sama sekali.
+// Step 1: minta token HMAC sementara (expire 30 detik) dari /api/token
+// Step 2: pakai token untuk fetch logic dari /api/s
+// Token invalid/expired → 403, logic tidak pernah dikirim
 (function () {
   fetch('/api/token')
     .then(function (r) { return r.ok ? r.json() : null; })
