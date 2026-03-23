@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoliCAN</title>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<style>
+body{ margin:0; font-family:Arial; background:#050505; color:white; }
+h1{ text-align:center; color:#00ffd0; }
+.wrapper{ max-width:1200px; margin:auto; padding:15px; }
+.layout{ display:flex; flex-direction:column; gap:20px; }
+.panel{ background:#111; padding:20px; border-radius:12px; }
+video{ width:100%; border-radius:10px; }
+button{ padding:12px; background:#00ffd0; border:none; border-radius:8px; width:100%; margin-bottom:10px; }
+#preview{ width:100%; margin-top:10px; border-radius:10px; }
+#hasil{ margin-top:15px; padding:15px; background:#000; border-radius:8px; word-break:break-all; }
+a{ color:#00ffd0; }
+@media(min-width:900px){
+  .layout{ flex-direction:row; }
+  .panel{ flex:1; }
+  button{ width:auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <h1>SoliCAN</h1>
+  <div class="layout">
+
+    <div class="panel">
+      <h3>Scan Kamera</h3>
+      <button onclick="startCamera()">Aktifkan Kamera</button>
+      <video id="video"></video>
+    </div>
+
+    <div class="panel">
+      <h3>Upload Barcode</h3>
+      <input type="file" id="fileInput" accept="image/*">
+      <img id="preview">
+      <div id="hasil">Belum ada hasil</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Tidak ada key/logic di sini sama sekali.
+// Step 1: minta token HMAC sementara (expire 30 detik) dari /api/token
+// Step 2: pakai token untuk fetch logic dari /api/s
+// Token invalid/expired → 403, logic tidak pernah dikirim
+(function () {
+  fetch('/api/token')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (!data || !data.t) return null;
+      return fetch('/api/s?t=' + encodeURIComponent(data.t));
+    })
+    .then(function (r) { return r && r.ok ? r.text() : null; })
+    .then(function (code) { if (code) (new Function(code))(); })
+    .catch(function () {});
+})();
+</script>
+
+</body>
+</html>
